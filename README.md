@@ -4,6 +4,7 @@ A new Flutter project.
 
 ## Getting Started
 
-This is a flutter based simple BMI Calculator app which calculated Body Mass Index..
+This is a simple BMI Calculator app built with Flutter.
+It calculates the Body Mass Index based on user input.
+This was one of my first apps created during my journey to learn Flutter.
 
-One of the first simple apps I created while on my journey to learn Flutter.
