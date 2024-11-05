@@ -9,14 +9,17 @@ import 'package:url_launcher/url_launcher.dart'; // For launching URLs
 const activeColor = Color(0xff0073dd);
 const inActiveColor = Color(0xFF212121);
 const textStyle1 = TextStyle(fontSize: 18.0, color: Colors.white);
-const textStyle2 = TextStyle(fontSize: 50.0, fontWeight: FontWeight.w900, color: Colors.white);
-const textStyle3 = TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold, color: Colors.white);
+const textStyle2 =
+    TextStyle(fontSize: 50.0, fontWeight: FontWeight.w900, color: Colors.white);
+const textStyle3 =
+    TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold, color: Colors.white);
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
   @override
-  _MainScreenState createState() => _MainScreenState(); // Creating state for MainScreen
+  _MainScreenState createState() =>
+      _MainScreenState(); // Creating state for MainScreen
 }
 
 class _MainScreenState extends State<MainScreen> {
@@ -32,12 +35,16 @@ class _MainScreenState extends State<MainScreen> {
   void updateBoxColor(int gender) {
     if (gender == 1) {
       // If male is selected
-      maleBoxColor = (maleBoxColor == inActiveColor) ? activeColor : inActiveColor;
-      femaleBoxColor = (maleBoxColor == inActiveColor) ? inActiveColor : activeColor;
+      maleBoxColor =
+          (maleBoxColor == inActiveColor) ? activeColor : inActiveColor;
+      femaleBoxColor =
+          (maleBoxColor == inActiveColor) ? inActiveColor : activeColor;
     } else {
       // If female is selected
-      femaleBoxColor = (femaleBoxColor == inActiveColor) ? activeColor : inActiveColor;
-      maleBoxColor = (femaleBoxColor == activeColor) ? inActiveColor : activeColor;
+      femaleBoxColor =
+          (femaleBoxColor == inActiveColor) ? activeColor : inActiveColor;
+      maleBoxColor =
+          (femaleBoxColor == activeColor) ? inActiveColor : activeColor;
     }
   }
 
@@ -51,7 +58,8 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("BMI Calculator")), // App bar title
-      body: SingleChildScrollView( // Allow scrolling if the content is too large
+      body: SingleChildScrollView(
+        // Allow scrolling if the content is too large
         child: Column(
           children: <Widget>[
             // Gender selection row
@@ -59,19 +67,23 @@ class _MainScreenState extends State<MainScreen> {
               children: <Widget>[
                 Expanded(
                   child: GestureDetector(
-                    onTap: () => setState(() => updateBoxColor(1)), // Update color for male
+                    onTap: () => setState(() => updateBoxColor(1)),
+                    // Update color for male
                     child: ContainerBox(
                       boxColor: maleBoxColor,
-                      childwidget: const DataContainer(icon: FontAwesomeIcons.male, title: 'MALE'),
+                      childwidget: const DataContainer(
+                          icon: FontAwesomeIcons.male, title: 'MALE'),
                     ),
                   ),
                 ),
                 Expanded(
                   child: GestureDetector(
-                    onTap: () => setState(() => updateBoxColor(2)), // Update color for female
+                    onTap: () => setState(() => updateBoxColor(2)),
+                    // Update color for female
                     child: ContainerBox(
                       boxColor: femaleBoxColor,
-                      childwidget: const DataContainer(icon: FontAwesomeIcons.female, title: 'FEMALE'),
+                      childwidget: const DataContainer(
+                          icon: FontAwesomeIcons.female, title: 'FEMALE'),
                     ),
                   ),
                 ),
@@ -97,7 +109,8 @@ class _MainScreenState extends State<MainScreen> {
                     max: 220,
                     activeColor: activeColor,
                     inactiveColor: inActiveColor,
-                    onChanged: (newValue) => setState(() => height = newValue.round()), // Update height
+                    onChanged: (newValue) => setState(
+                        () => height = newValue.round()), // Update height
                   ),
                 ],
               ),
@@ -108,7 +121,8 @@ class _MainScreenState extends State<MainScreen> {
                 Expanded(
                   child: ContainerBox(
                     boxColor: inActiveColor,
-                    childwidget: buildWeightContainer(), // Weight selection widget
+                    childwidget:
+                        buildWeightContainer(), // Weight selection widget
                   ),
                 ),
                 Expanded(
@@ -131,7 +145,8 @@ class _MainScreenState extends State<MainScreen> {
                     builder: (BuildContext context) {
                       return Dialog(
                         backgroundColor: inActiveColor,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0)),
                         child: Container(
                           color: inActiveColor,
                           height: 200.0,
@@ -140,7 +155,8 @@ class _MainScreenState extends State<MainScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               const Text('Your BMI', style: textStyle1),
-                              Text(result.toString(), style: textStyle2), // Display BMI result
+                              Text(result.toString(), style: textStyle2),
+                              // Display BMI result
                             ],
                           ),
                         ),
@@ -154,7 +170,8 @@ class _MainScreenState extends State<MainScreen> {
                 height: 60.0,
                 color: activeColor,
                 margin: const EdgeInsets.only(top: 10.0),
-                child: const Center(child: Text('Calculate', style: textStyle3)),
+                child:
+                    const Center(child: Text('Calculate', style: textStyle3)),
               ),
             ),
           ],
@@ -186,7 +203,8 @@ class _MainScreenState extends State<MainScreen> {
             ),
             const SizedBox(width: 10.0),
             FloatingActionButton(
-              onPressed: () => setState(() => weight > 0 ? weight-- : weight), // Decrement weight
+              onPressed: () => setState(() => weight > 0 ? weight-- : weight),
+              // Decrement weight
               backgroundColor: activeColor,
               child: const Icon(FontAwesomeIcons.minus, color: Colors.white),
             ),
@@ -207,13 +225,15 @@ class _MainScreenState extends State<MainScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             FloatingActionButton(
-              onPressed: () => setState(() => age < 100 ? age++ : age), // Increment age
+              onPressed: () => setState(() => age < 100 ? age++ : age),
+              // Increment age
               backgroundColor: activeColor,
               child: const Icon(FontAwesomeIcons.plus, color: Colors.white),
             ),
             const SizedBox(width: 10.0),
             FloatingActionButton(
-              onPressed: () => setState(() => age > 0 ? age-- : age), // Decrement age
+              onPressed: () => setState(() => age > 0 ? age-- : age),
+              // Decrement age
               backgroundColor: activeColor,
               child: const Icon(FontAwesomeIcons.minus, color: Colors.white),
             ),
@@ -250,14 +270,18 @@ class _MainScreenState extends State<MainScreen> {
     return [
       FloatingActionButton(
         elevation: 0,
-        onPressed: () => launch('https://github.com/hamza091197?tab=repositories'), // Launch GitHub
+        onPressed: () =>
+            launch('https://github.com/hamza091197?tab=repositories'),
+        // Launch GitHub
         backgroundColor: inActiveColor,
         child: const Icon(FontAwesomeIcons.github, color: Colors.white),
       ),
       const SizedBox(width: 10.0),
       FloatingActionButton(
         elevation: 0,
-        onPressed: () => launch('https://www.linkedin.com/in/hamza-khalid-357b4327b/'), // Launch LinkedIn
+        onPressed: () =>
+            launch('https://www.linkedin.com/in/hamza-khalid-357b4327b/'),
+        // Launch LinkedIn
         backgroundColor: inActiveColor,
         child: const Icon(FontAwesomeIcons.linkedin, color: Colors.white),
       ),
