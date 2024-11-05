@@ -150,7 +150,7 @@ class _MainScreenState extends State<MainScreen> {
               child: Container(
                 child: Center(child: Text('Calculate', style: textStyle3)),
                 width: double.infinity,
-                height: 80.0,
+                height: 60.0,
                 color: activeColor,
                 margin: EdgeInsets.only(top: 10.0),
               ),
