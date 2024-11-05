@@ -8,7 +8,7 @@ const textStyle3 = TextStyle(color: Color(0xFFFFFFFF), fontSize: 30.0, fontWeigh
 // A stateless widget that represents a data container with an icon and a title
 class DataContainer extends StatelessWidget {
   // Constructor for DataContainer, requires an icon and a title
-  const DataContainer({Key? key, required this.icon, required this.title}) : super(key: key);
+  const DataContainer({super.key, required this.icon, required this.title});
 
   final IconData icon; // Icon data to be displayed
   final String title; // Title text to be displayed

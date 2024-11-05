@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ContainerBox extends StatelessWidget {
   // Constructor to create a ContainerBox with a specified color and child widget
-  const ContainerBox({Key? key, required this.boxColor, required this.childwidget}) : super(key: key);
+  const ContainerBox({super.key, required this.boxColor, required this.childwidget});
 
   // Color of the container
   final Color boxColor;

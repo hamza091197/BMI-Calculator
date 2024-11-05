@@ -13,6 +13,8 @@ const textStyle2 = TextStyle(fontSize: 50.0, fontWeight: FontWeight.w900, color:
 const textStyle3 = TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold, color: Colors.white);
 
 class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
   @override
   _MainScreenState createState() => _MainScreenState(); // Creating state for MainScreen
 }
@@ -48,7 +50,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("BMI Calculator")), // App bar title
+      appBar: AppBar(title: const Text("BMI Calculator")), // App bar title
       body: SingleChildScrollView( // Allow scrolling if the content is too large
         child: Column(
           children: <Widget>[
@@ -60,7 +62,7 @@ class _MainScreenState extends State<MainScreen> {
                     onTap: () => setState(() => updateBoxColor(1)), // Update color for male
                     child: ContainerBox(
                       boxColor: maleBoxColor,
-                      childwidget: DataContainer(icon: FontAwesomeIcons.male, title: 'MALE'),
+                      childwidget: const DataContainer(icon: FontAwesomeIcons.male, title: 'MALE'),
                     ),
                   ),
                 ),
@@ -69,7 +71,7 @@ class _MainScreenState extends State<MainScreen> {
                     onTap: () => setState(() => updateBoxColor(2)), // Update color for female
                     child: ContainerBox(
                       boxColor: femaleBoxColor,
-                      childwidget: DataContainer(icon: FontAwesomeIcons.female, title: 'FEMALE'),
+                      childwidget: const DataContainer(icon: FontAwesomeIcons.female, title: 'FEMALE'),
                     ),
                   ),
                 ),
@@ -81,12 +83,12 @@ class _MainScreenState extends State<MainScreen> {
               childwidget: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text('HEIGHT', style: textStyle1),
+                  const Text('HEIGHT', style: textStyle1),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(height.toString(), style: textStyle2),
-                      Text('cm', style: textStyle1),
+                      const Text('cm', style: textStyle1),
                     ],
                   ),
                   Slider(
@@ -133,11 +135,11 @@ class _MainScreenState extends State<MainScreen> {
                         child: Container(
                           color: inActiveColor,
                           height: 200.0,
-                          margin: EdgeInsets.all(10.0),
+                          margin: const EdgeInsets.all(10.0),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              Text('Your BMI', style: textStyle1),
+                              const Text('Your BMI', style: textStyle1),
                               Text(result.toString(), style: textStyle2), // Display BMI result
                             ],
                           ),
@@ -148,11 +150,11 @@ class _MainScreenState extends State<MainScreen> {
                 });
               },
               child: Container(
-                child: Center(child: Text('Calculate', style: textStyle3)),
                 width: double.infinity,
                 height: 60.0,
                 color: activeColor,
-                margin: EdgeInsets.only(top: 10.0),
+                margin: const EdgeInsets.only(top: 10.0),
+                child: const Center(child: Text('Calculate', style: textStyle3)),
               ),
             ),
           ],
@@ -166,12 +168,12 @@ class _MainScreenState extends State<MainScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Text('WEIGHT', style: textStyle1),
+        const Text('WEIGHT', style: textStyle1),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(weight.toString(), style: textStyle2),
-            Text('kg', style: textStyle1),
+            const Text('kg', style: textStyle1),
           ],
         ),
         Row(
@@ -180,13 +182,13 @@ class _MainScreenState extends State<MainScreen> {
             FloatingActionButton(
               onPressed: () => setState(() => weight++), // Increment weight
               backgroundColor: activeColor,
-              child: Icon(FontAwesomeIcons.plus, color: Colors.white),
+              child: const Icon(FontAwesomeIcons.plus, color: Colors.white),
             ),
-            SizedBox(width: 10.0),
+            const SizedBox(width: 10.0),
             FloatingActionButton(
               onPressed: () => setState(() => weight > 0 ? weight-- : weight), // Decrement weight
               backgroundColor: activeColor,
-              child: Icon(FontAwesomeIcons.minus, color: Colors.white),
+              child: const Icon(FontAwesomeIcons.minus, color: Colors.white),
             ),
           ],
         ),
@@ -199,7 +201,7 @@ class _MainScreenState extends State<MainScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Text('AGE', style: textStyle1),
+        const Text('AGE', style: textStyle1),
         Text(age.toString(), style: textStyle2),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -207,13 +209,13 @@ class _MainScreenState extends State<MainScreen> {
             FloatingActionButton(
               onPressed: () => setState(() => age < 100 ? age++ : age), // Increment age
               backgroundColor: activeColor,
-              child: Icon(FontAwesomeIcons.plus, color: Colors.white),
+              child: const Icon(FontAwesomeIcons.plus, color: Colors.white),
             ),
-            SizedBox(width: 10.0),
+            const SizedBox(width: 10.0),
             FloatingActionButton(
               onPressed: () => setState(() => age > 0 ? age-- : age), // Decrement age
               backgroundColor: activeColor,
-              child: Icon(FontAwesomeIcons.minus, color: Colors.white),
+              child: const Icon(FontAwesomeIcons.minus, color: Colors.white),
             ),
           ],
         ),
@@ -231,7 +233,7 @@ class _MainScreenState extends State<MainScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               const Text('Developed with ❤ by Hamza Khalid', style: textStyle1),
-              SizedBox(height: 10.0),
+              const SizedBox(height: 10.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: buildSocialMediaIcons(), // Build social media icons
@@ -250,14 +252,14 @@ class _MainScreenState extends State<MainScreen> {
         elevation: 0,
         onPressed: () => launch('https://github.com/hamza091197?tab=repositories'), // Launch GitHub
         backgroundColor: inActiveColor,
-        child: Icon(FontAwesomeIcons.github, color: Colors.white),
+        child: const Icon(FontAwesomeIcons.github, color: Colors.white),
       ),
-      SizedBox(width: 10.0),
+      const SizedBox(width: 10.0),
       FloatingActionButton(
         elevation: 0,
         onPressed: () => launch('https://www.linkedin.com/in/hamza-khalid-357b4327b/'), // Launch LinkedIn
         backgroundColor: inActiveColor,
-        child: Icon(FontAwesomeIcons.linkedin, color: Colors.white),
+        child: const Icon(FontAwesomeIcons.linkedin, color: Colors.white),
       ),
     ];
   }
