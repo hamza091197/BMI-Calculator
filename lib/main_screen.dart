@@ -13,9 +13,9 @@ const activeColor = Color(0xff0073dd);
 const inActiveColor = Color(0xFF212121);
 const textStyle1 = TextStyle(fontSize: 18.0, color: Colors.white);
 const textStyle2 =
-TextStyle(fontSize: 50.0, fontWeight: FontWeight.w900, color: Colors.white);
+    TextStyle(fontSize: 50.0, fontWeight: FontWeight.w900, color: Colors.white);
 const textStyle3 =
-TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold, color: Colors.white);
+    TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold, color: Colors.white);
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -43,20 +43,26 @@ class MainScreenState extends State<MainScreen> {
           child: pw.Column(
             mainAxisAlignment: pw.MainAxisAlignment.center,
             children: <pw.Widget>[
-              pw.Text('BMI Report', style: pw.TextStyle(fontSize: 30, fontWeight: pw.FontWeight.bold)),
+              pw.Text('BMI Report',
+                  style: pw.TextStyle(
+                      fontSize: 30, fontWeight: pw.FontWeight.bold)),
               pw.SizedBox(height: 20),
-              pw.Text('Height: $height cm', style: const pw.TextStyle(fontSize: 20)),
-              pw.Text('Weight: $weight kg', style: const pw.TextStyle(fontSize: 20)),
-              pw.Text('Age: $age years', style: const pw.TextStyle(fontSize: 20)),
+              pw.Text('Height: $height cm',
+                  style: const pw.TextStyle(fontSize: 20)),
+              pw.Text('Weight: $weight kg',
+                  style: const pw.TextStyle(fontSize: 20)),
+              pw.Text('Age: $age years',
+                  style: const pw.TextStyle(fontSize: 20)),
               pw.SizedBox(height: 20),
-              pw.Text('BMI: $result', style: pw.TextStyle(fontSize: 25, fontWeight: pw.FontWeight.bold)),
+              pw.Text('BMI: $result',
+                  style: pw.TextStyle(
+                      fontSize: 25, fontWeight: pw.FontWeight.bold)),
             ],
           ),
         );
       },
     ));
 
-    // Save the PDF file
     try {
       // Get the directory to save the PDF file
       final directory = await getApplicationDocumentsDirectory();
@@ -71,16 +77,17 @@ class MainScreenState extends State<MainScreen> {
         SnackBar(content: Text('Report saved at: $filePath')),
       );
 
-      // Optionally, you can open the file location using the url_launcher plugin
-      // to show the file in a file explorer, or share it
-      if (await canLaunch(filePath)) {
-        await launch(filePath);
+      // Open the file in a file viewer
+      final uri = Uri.file(filePath);
+      if (await canLaunch(uri.toString())) {
+        await launch(uri.toString());
       } else {
-        throw 'Could not open the file path';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not open the file path')),
+        );
       }
-
     } catch (e) {
-      // If there's an error, show a Snackbar with an error message
+      // Show an error message if the report could not be saved
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error saving report: $e')),
       );
@@ -253,13 +260,13 @@ class MainScreenState extends State<MainScreen> {
                         'Enter your weight',
                         'Weight in kg',
                         weightController,
-                            (val) => weight = val),
+                        (val) => weight = val),
                     child: buildContainer(
                         'WEIGHT',
                         weight,
                         'kg',
-                            () => setState(() => weight++),
-                            () => setState(() => weight--)),
+                        () => setState(() => weight++),
+                        () => setState(() => weight--)),
                   ),
                 ),
                 Expanded(
@@ -270,8 +277,8 @@ class MainScreenState extends State<MainScreen> {
                         'AGE',
                         age,
                         'years',
-                            () => setState(() => age++),
-                            () => setState(() => age--)),
+                        () => setState(() => age++),
+                        () => setState(() => age--)),
                   ),
                 ),
               ],
@@ -284,8 +291,7 @@ class MainScreenState extends State<MainScreen> {
                   childwidget: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      const Text('',
-                          style: textStyle1),
+                      const Text('', style: textStyle1),
                       const SizedBox(height: 10.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
