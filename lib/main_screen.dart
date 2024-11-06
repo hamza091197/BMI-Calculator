@@ -1,23 +1,18 @@
 import 'dart:math';
+import 'package:calculator/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'container_box.dart';
 import 'data_container.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-// Constant colors and text styles
-const activeColor = Color(0xff0073dd); // Color for active boxes
-const inActiveColor = Color(0xFF212121); // Color for inactive boxes
-const textStyle1 =
-    TextStyle(fontSize: 18.0, color: Colors.white); // Style for regular text
-const textStyle2 = TextStyle(
-    fontSize: 50.0,
-    fontWeight: FontWeight.w900,
-    color: Colors.white); // Style for large text
-const textStyle3 = TextStyle(
-    fontSize: 25.0,
-    fontWeight: FontWeight.bold,
-    color: Colors.white); // Style for bold text
+const activeColor = Color(0xff0073dd);
+const inActiveColor = Color(0xFF212121);
+const textStyle1 = TextStyle(fontSize: 18.0, color: Colors.white);
+const textStyle2 =
+    TextStyle(fontSize: 50.0, fontWeight: FontWeight.w900, color: Colors.white);
+const textStyle3 =
+    TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold, color: Colors.white);
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -27,37 +22,26 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  // Variables to store the state of the app
-  Color maleBoxColor = activeColor; // Male box color
-  Color femaleBoxColor = inActiveColor; // Female box color
-  int height = 165, weight = 80, age = 27; // Initial height, weight, and age
-  String result = ""; // To store BMI result
-  final _weightController =
-      TextEditingController(); // Controller for weight input
-  final _ageController = TextEditingController(); // Controller for age input
+  Color maleBoxColor = activeColor;
+  Color femaleBoxColor = inActiveColor;
+  int height = 165, weight = 80, age = 27;
+  String result = "";
+  final _weightController = TextEditingController();
+  final _ageController = TextEditingController();
 
-  // Function to update the color of the gender boxes when selected
+  // Toggle box color based on gender selection
   void updateBoxColor(int gender) {
     setState(() {
-      if (gender == 1) {
-        // If male is selected, set male to active and female to inactive
-        maleBoxColor = activeColor;
-        femaleBoxColor = inActiveColor;
-      } else {
-        // If female is selected, set female to active and male to inactive
-        femaleBoxColor = activeColor;
-        maleBoxColor = inActiveColor;
-      }
+      maleBoxColor = gender == 1 ? activeColor : inActiveColor;
+      femaleBoxColor = gender == 2 ? activeColor : inActiveColor;
     });
   }
 
-  // Function to calculate BMI based on weight and height
-  String calculateBmi(int weight, int height) {
-    return (weight / pow(height / 100, 2))
-        .toStringAsFixed(1); // Formula for BMI
-  }
+  // BMI calculation logic
+  String calculateBmi(int weight, int height) =>
+      (weight / pow(height / 100, 2)).toStringAsFixed(1);
 
-  // Function to show an input dialog for weight or age
+  // Show input dialog to update weight or age
   void showInputDialog(String title, String hintText,
       TextEditingController controller, Function(int) updateValue) {
     showDialog(
@@ -71,20 +55,22 @@ class _MainScreenState extends State<MainScreen> {
             decoration: InputDecoration(hintText: hintText),
           ),
           actions: [
-            // Button to submit the input and update value
             TextButton(
               onPressed: () {
-                int value = int.tryParse(controller.text) ??
-                    (hintText == 'Weight in kg' ? weight : age);
-                if (value > 200) {
+                int value = int.tryParse(controller.text) ?? 0;
+                if (value > 200 || value <= 0) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text('$title exceeds the maximum limit of 200'),
+                    content: Text(value > 200
+                        ? 'Exceeds the maximum limit of 200'
+                        : 'Value cannot be zero or negative'),
                     backgroundColor: Colors.redAccent,
                   ));
                 } else {
-                  updateValue(value); // Update the value based on user input
+                  setState(() {
+                    updateValue(value);
+                  });
+                  Navigator.of(context).pop();
                 }
-                Navigator.of(context).pop();
               },
               child: const Text('OK'),
             ),
@@ -94,7 +80,7 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  // Function to build the container for weight and age selection with increment/decrement buttons
+  // Create the container for weight or age input
   Widget buildContainer(String title, int value, String unit,
       void Function() increment, void Function() decrement) {
     return ContainerBox(
@@ -103,66 +89,73 @@ class _MainScreenState extends State<MainScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Text(title, style: textStyle1),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(value.toString(), style: textStyle2),
-              Text(unit, style: textStyle1),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              // Increment button
-              FloatingActionButton(
-                  onPressed: increment,
-                  backgroundColor: activeColor,
-                  child:
-                      const Icon(FontAwesomeIcons.plus, color: Colors.white)),
-              SizedBox(width: 20),
-              // Decrement button
-              FloatingActionButton(
-                  onPressed: decrement,
-                  backgroundColor: activeColor,
-                  child:
-                      const Icon(FontAwesomeIcons.minus, color: Colors.white)),
-            ],
-          ),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+            Text(value.toString(), style: textStyle2),
+            Text(unit, style: textStyle1),
+          ]),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+            FloatingActionButton(
+                onPressed: increment,
+                backgroundColor: activeColor,
+                child: const Icon(FontAwesomeIcons.plus, color: Colors.white)),
+            const SizedBox(width: 20),
+            FloatingActionButton(
+                onPressed: decrement,
+                backgroundColor: activeColor,
+                child: const Icon(FontAwesomeIcons.minus, color: Colors.white)),
+          ]),
         ],
       ),
+    );
+  }
+
+  // Handle back button navigation
+  void handleBack() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("BMI Calculator")), // AppBar with title
+      appBar: AppBar(
+        title: const Text("BMI Calculator"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: handleBack, // Handle the back press here
+        ),
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            // Row to display male and female selection boxes
+            // Gender selection boxes
             Row(
               children: <Widget>[
-                // Male gender box
                 Expanded(
-                    child: GestureDetector(
-                        onTap: () => updateBoxColor(1),
-                        child: ContainerBox(
-                            boxColor: maleBoxColor,
-                            childwidget: const DataContainer(
-                                icon: FontAwesomeIcons.male, title: 'MALE')))),
-                // Female gender box
+                  child: GestureDetector(
+                    onTap: () => updateBoxColor(1),
+                    child: ContainerBox(
+                      boxColor: maleBoxColor,
+                      childwidget: const DataContainer(
+                          icon: FontAwesomeIcons.male, title: 'MALE'),
+                    ),
+                  ),
+                ),
                 Expanded(
-                    child: GestureDetector(
-                        onTap: () => updateBoxColor(2),
-                        child: ContainerBox(
-                            boxColor: femaleBoxColor,
-                            childwidget: const DataContainer(
-                                icon: FontAwesomeIcons.female,
-                                title: 'FEMALE')))),
+                  child: GestureDetector(
+                    onTap: () => updateBoxColor(2),
+                    child: ContainerBox(
+                      boxColor: femaleBoxColor,
+                      childwidget: const DataContainer(
+                          icon: FontAwesomeIcons.female, title: 'FEMALE'),
+                    ),
+                  ),
+                ),
               ],
             ),
-            // Container for height input with a slider
+            // Height slider
             ContainerBox(
               boxColor: inActiveColor,
               childwidget: Column(
@@ -170,12 +163,11 @@ class _MainScreenState extends State<MainScreen> {
                 children: <Widget>[
                   const Text('HEIGHT', style: textStyle1),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(height.toString(), style: textStyle2),
-                      const Text('cm', style: textStyle1),
-                    ],
-                  ),
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(height.toString(), style: textStyle2),
+                        const Text('cm', style: textStyle1),
+                      ]),
                   Slider(
                     value: height.toDouble(),
                     min: 120,
@@ -188,35 +180,39 @@ class _MainScreenState extends State<MainScreen> {
                 ],
               ),
             ),
-            // Row to display weight and age containers with input options
+            // Weight and Age containers
             Row(
               children: <Widget>[
                 Expanded(
-                    child: GestureDetector(
-                        onTap: () => showInputDialog(
-                            'Enter your weight',
-                            'Weight in kg',
-                            _weightController,
-                            (val) => weight = val),
-                        child: buildContainer(
-                            'WEIGHT',
-                            weight,
-                            'kg',
-                            () => setState(() => weight++),
-                            () => setState(() => weight--)))),
+                  child: GestureDetector(
+                    onTap: () => showInputDialog(
+                        'Enter your weight',
+                        'Weight in kg',
+                        _weightController,
+                        (val) => weight = val),
+                    child: buildContainer(
+                        'WEIGHT',
+                        weight,
+                        'kg',
+                        () => setState(() => weight++),
+                        () => setState(() => weight--)),
+                  ),
+                ),
                 Expanded(
-                    child: GestureDetector(
-                        onTap: () => showInputDialog('Enter your age', 'Age',
-                            _ageController, (val) => age = val),
-                        child: buildContainer(
-                            'AGE',
-                            age,
-                            'years',
-                            () => setState(() => age++),
-                            () => setState(() => age--)))),
+                  child: GestureDetector(
+                    onTap: () => showInputDialog('Enter your age', 'Age',
+                        _ageController, (val) => age = val),
+                    child: buildContainer(
+                        'AGE',
+                        age,
+                        'years',
+                        () => setState(() => age++),
+                        () => setState(() => age--)),
+                  ),
+                ),
               ],
             ),
-            // Footer with developer info and social media links
+            // Footer with developer info and links
             Column(
               children: <Widget>[
                 ContainerBox(
@@ -230,15 +226,13 @@ class _MainScreenState extends State<MainScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // GitHub link button
                           FloatingActionButton(
                               onPressed: () => launch(
                                   'https://github.com/hamza091197?tab=repositories'),
                               backgroundColor: inActiveColor,
                               child: const Icon(FontAwesomeIcons.github,
                                   color: Colors.white)),
-                          SizedBox(width: 1),
-                          // LinkedIn link button
+                          const SizedBox(width: 10.0),
                           FloatingActionButton(
                               onPressed: () => launch(
                                   'https://www.linkedin.com/in/hamza-khalid-357b4327b/'),
@@ -252,12 +246,11 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ],
             ),
-            // Calculate BMI button
+            // BMI Calculation Button
             GestureDetector(
               onTap: () {
                 setState(() {
-                  result = calculateBmi(weight, height); // Calculate BMI
-                  // Show BMI result in dialog
+                  result = calculateBmi(weight, height);
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
@@ -273,7 +266,7 @@ class _MainScreenState extends State<MainScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               const Text('Your BMI', style: textStyle1),
-                              Text(result.toString(), style: textStyle2),
+                              Text(result, style: textStyle2),
                             ],
                           ),
                         ),
@@ -283,16 +276,16 @@ class _MainScreenState extends State<MainScreen> {
                 });
               },
               child: Container(
-                  width: double.infinity,
-                  height: 60.0,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30.0),
-                    color: activeColor,
-                  ),
-                  child: const Center(
-                      child: Text('Calculate BMI',
-                          style:
-                              TextStyle(color: Colors.white, fontSize: 20.0)))),
+                width: double.infinity,
+                height: 60.0,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30.0),
+                  color: activeColor,
+                ),
+                child: const Center(
+                    child: Text('Calculate BMI',
+                        style: TextStyle(color: Colors.white, fontSize: 20.0))),
+              ),
             ),
           ],
         ),
