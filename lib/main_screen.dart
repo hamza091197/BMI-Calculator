@@ -5,29 +5,87 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'container_box.dart';
 import 'data_container.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:io';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:path_provider/path_provider.dart';
 
 const activeColor = Color(0xff0073dd);
 const inActiveColor = Color(0xFF212121);
 const textStyle1 = TextStyle(fontSize: 18.0, color: Colors.white);
 const textStyle2 =
-    TextStyle(fontSize: 50.0, fontWeight: FontWeight.w900, color: Colors.white);
+TextStyle(fontSize: 50.0, fontWeight: FontWeight.w900, color: Colors.white);
 const textStyle3 =
-    TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold, color: Colors.white);
+TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold, color: Colors.white);
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
   @override
-  _MainScreenState createState() => _MainScreenState();
+  MainScreenState createState() => MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class MainScreenState extends State<MainScreen> {
   Color maleBoxColor = activeColor;
   Color femaleBoxColor = inActiveColor;
   int height = 165, weight = 80, age = 27;
   String result = "";
-  final _weightController = TextEditingController();
-  final _ageController = TextEditingController();
+  final weightController = TextEditingController();
+  final ageController = TextEditingController();
+
+  // Logic for downloading the report (generate and save as PDF)
+  Future<void> downloadReport() async {
+    // Create the PDF document
+    final pdf = pw.Document();
+
+    pdf.addPage(pw.Page(
+      build: (pw.Context context) {
+        return pw.Center(
+          child: pw.Column(
+            mainAxisAlignment: pw.MainAxisAlignment.center,
+            children: <pw.Widget>[
+              pw.Text('BMI Report', style: pw.TextStyle(fontSize: 30, fontWeight: pw.FontWeight.bold)),
+              pw.SizedBox(height: 20),
+              pw.Text('Height: $height cm', style: const pw.TextStyle(fontSize: 20)),
+              pw.Text('Weight: $weight kg', style: const pw.TextStyle(fontSize: 20)),
+              pw.Text('Age: $age years', style: const pw.TextStyle(fontSize: 20)),
+              pw.SizedBox(height: 20),
+              pw.Text('BMI: $result', style: pw.TextStyle(fontSize: 25, fontWeight: pw.FontWeight.bold)),
+            ],
+          ),
+        );
+      },
+    ));
+
+    // Save the PDF file
+    try {
+      // Get the directory to save the PDF file
+      final directory = await getApplicationDocumentsDirectory();
+      final filePath = '${directory.path}/bmi_report.pdf';
+
+      // Write the PDF file to the device
+      final file = File(filePath);
+      await file.writeAsBytes(await pdf.save());
+
+      // Show a Snackbar indicating the report has been saved
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Report saved at: $filePath')),
+      );
+
+      // Optionally, you can open the file location using the url_launcher plugin
+      // to show the file in a file explorer, or share it
+      if (await canLaunch(filePath)) {
+        await launch(filePath);
+      } else {
+        throw 'Could not open the file path';
+      }
+
+    } catch (e) {
+      // If there's an error, show a Snackbar with an error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error saving report: $e')),
+      );
+    }
+  }
 
   // Toggle box color based on gender selection
   void updateBoxColor(int gender) {
@@ -113,7 +171,7 @@ class _MainScreenState extends State<MainScreen> {
   void handleBack() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => LoginScreen()),
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
     );
   }
 
@@ -126,6 +184,12 @@ class _MainScreenState extends State<MainScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: handleBack, // Handle the back press here
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.download_rounded),
+            onPressed: downloadReport, // Trigger download report logic
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -188,26 +252,26 @@ class _MainScreenState extends State<MainScreen> {
                     onTap: () => showInputDialog(
                         'Enter your weight',
                         'Weight in kg',
-                        _weightController,
-                        (val) => weight = val),
+                        weightController,
+                            (val) => weight = val),
                     child: buildContainer(
                         'WEIGHT',
                         weight,
                         'kg',
-                        () => setState(() => weight++),
-                        () => setState(() => weight--)),
+                            () => setState(() => weight++),
+                            () => setState(() => weight--)),
                   ),
                 ),
                 Expanded(
                   child: GestureDetector(
                     onTap: () => showInputDialog('Enter your age', 'Age',
-                        _ageController, (val) => age = val),
+                        ageController, (val) => age = val),
                     child: buildContainer(
                         'AGE',
                         age,
                         'years',
-                        () => setState(() => age++),
-                        () => setState(() => age--)),
+                            () => setState(() => age++),
+                            () => setState(() => age--)),
                   ),
                 ),
               ],
@@ -220,7 +284,7 @@ class _MainScreenState extends State<MainScreen> {
                   childwidget: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      const Text('Developed with ❤ by Hamza Khalid',
+                      const Text('',
                           style: textStyle1),
                       const SizedBox(height: 10.0),
                       Row(
@@ -246,7 +310,7 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ],
             ),
-            // BMI Calculation Button
+            // BMI Calculation Button (unchanged)
             GestureDetector(
               onTap: () {
                 setState(() {
@@ -265,7 +329,7 @@ class _MainScreenState extends State<MainScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              const Text('Your BMI', style: textStyle1),
+                              const Text('Your BMI', style: textStyle3),
                               Text(result, style: textStyle2),
                             ],
                           ),

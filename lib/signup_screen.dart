@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'login_screen.dart'; // Import the login screen
+// Import the login screen
 
 class SignupScreen extends StatefulWidget {
-  const SignupScreen({Key? key}) : super(key: key);
+  const SignupScreen({super.key});
 
   @override
   _SignupScreenState createState() => _SignupScreenState();
@@ -30,10 +30,10 @@ class _SignupScreenState extends State<SignupScreen> {
               TextFormField(
                 controller: _usernameController,
                 style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Username',
-                  labelStyle: const TextStyle(color: Colors.white),
-                  border: const OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.white),
+                  border: OutlineInputBorder(),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -46,10 +46,10 @@ class _SignupScreenState extends State<SignupScreen> {
               TextFormField(
                 controller: _emailController,
                 style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Email',
-                  labelStyle: const TextStyle(color: Colors.white),
-                  border: const OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.white),
+                  border: OutlineInputBorder(),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -65,10 +65,10 @@ class _SignupScreenState extends State<SignupScreen> {
                 controller: _passwordController,
                 obscureText: true,
                 style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Password',
-                  labelStyle: const TextStyle(color: Colors.white),
-                  border: const OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.white),
+                  border: OutlineInputBorder(),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {

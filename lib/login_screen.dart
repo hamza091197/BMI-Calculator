@@ -3,17 +3,17 @@ import 'signup_screen.dart'; // Import the signup screen
 import 'main_screen.dart'; // Import the main screen of the app
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  LoginScreenState createState() => LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+class LoginScreenState extends State<LoginScreen> {
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
-  final _formKey = GlobalKey<FormState>(); // Global key to validate form
+  final formKey = GlobalKey<FormState>(); // Global key to validate form
 
   @override
   Widget build(BuildContext context) {
@@ -24,16 +24,16 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
-          key: _formKey, // Form to handle validations
+          key: formKey, // Form to handle validations
           child: Column(
             children: [
               TextFormField(
-                controller: _usernameController,
+                controller: usernameController,
                 style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Username',
-                  labelStyle: const TextStyle(color: Colors.white),
-                  border: const OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.white),
+                  border: OutlineInputBorder(),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -44,13 +44,13 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 16),
               TextFormField(
-                controller: _passwordController,
+                controller: passwordController,
                 obscureText: true,
                 style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Password',
-                  labelStyle: const TextStyle(color: Colors.white),
-                  border: const OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.white),
+                  border: OutlineInputBorder(),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -62,10 +62,10 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () {
-                  if (_formKey.currentState?.validate() ?? false) {
+                  if (formKey.currentState?.validate() ?? false) {
                     // Simulate a login process
-                    if (_usernameController.text == 'a' &&
-                        _passwordController.text == 'a') {
+                    if (usernameController.text == 'a' &&
+                        passwordController.text == 'a') {
                       // Navigate to main screen if login is successful
                       Navigator.pushReplacement(
                         context,
