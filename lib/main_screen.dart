@@ -1,89 +1,89 @@
-import 'dart:math'; // Importing dart:math for mathematical calculations
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'container_box.dart'; // Importing custom widget ContainerBox
-import 'data_container.dart'; // Importing custom widget DataContainer
-import 'package:url_launcher/url_launcher.dart'; // For launching URLs
+import 'container_box.dart';
+import 'data_container.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-// Constants for colors and text styles
-const activeColor = Color(0xff0073dd);
-const inActiveColor = Color(0xFF212121);
-const textStyle1 = TextStyle(fontSize: 18.0, color: Colors.white);
-const textStyle2 =
-TextStyle(fontSize: 50.0, fontWeight: FontWeight.w900, color: Colors.white);
-const textStyle3 =
-TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold, color: Colors.white);
+// Constant colors and text styles
+const activeColor = Color(0xff0073dd); // Color for active boxes
+const inActiveColor = Color(0xFF212121); // Color for inactive boxes
+const textStyle1 =
+    TextStyle(fontSize: 18.0, color: Colors.white); // Style for regular text
+const textStyle2 = TextStyle(
+    fontSize: 50.0,
+    fontWeight: FontWeight.w900,
+    color: Colors.white); // Style for large text
+const textStyle3 = TextStyle(
+    fontSize: 25.0,
+    fontWeight: FontWeight.bold,
+    color: Colors.white); // Style for bold text
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
   @override
-  _MainScreenState createState() =>
-      _MainScreenState(); // Creating state for MainScreen
+  _MainScreenState createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
-  // State variables for UI elements
-  Color maleBoxColor = activeColor; // Color for male selection box
-  Color femaleBoxColor = inActiveColor; // Color for female selection box
-  int height = 165; // Default height in cm
-  int weight = 80; // Default weight in kg
-  int age = 27; // Default age
-  String result = ""; // Result variable for BMI calculation
-  final _weightController = TextEditingController();
-  final _ageController = TextEditingController();
+  // Variables to store the state of the app
+  Color maleBoxColor = activeColor; // Male box color
+  Color femaleBoxColor = inActiveColor; // Female box color
+  int height = 165, weight = 80, age = 27; // Initial height, weight, and age
+  String result = ""; // To store BMI result
+  final _weightController =
+      TextEditingController(); // Controller for weight input
+  final _ageController = TextEditingController(); // Controller for age input
 
-  // Function to update the color of gender selection boxes
+  // Function to update the color of the gender boxes when selected
   void updateBoxColor(int gender) {
-    if (gender == 1) {
-      // If male is selected
-      maleBoxColor =
-      (maleBoxColor == inActiveColor) ? activeColor : inActiveColor;
-      femaleBoxColor =
-      (maleBoxColor == inActiveColor) ? inActiveColor : activeColor;
-    } else {
-      // If female is selected
-      femaleBoxColor =
-      (femaleBoxColor == inActiveColor) ? activeColor : inActiveColor;
-      maleBoxColor =
-      (femaleBoxColor == activeColor) ? inActiveColor : activeColor;
-    }
+    setState(() {
+      if (gender == 1) {
+        // If male is selected, set male to active and female to inactive
+        maleBoxColor = activeColor;
+        femaleBoxColor = inActiveColor;
+      } else {
+        // If female is selected, set female to active and male to inactive
+        femaleBoxColor = activeColor;
+        maleBoxColor = inActiveColor;
+      }
+    });
   }
 
-  // Function to calculate BMI
+  // Function to calculate BMI based on weight and height
   String calculateBmi(int weight, int height) {
-    double bmi = weight / pow(height / 100, 2); // BMI formula
-    return bmi.toStringAsFixed(1); // Return BMI rounded to one decimal place
+    return (weight / pow(height / 100, 2))
+        .toStringAsFixed(1); // Formula for BMI
   }
 
-  // Function to show the weight input dialog
-  void showWeightInputDialog() {
+  // Function to show an input dialog for weight or age
+  void showInputDialog(String title, String hintText,
+      TextEditingController controller, Function(int) updateValue) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Enter your weight'),
+          title: Text(title),
           content: TextField(
-            controller: _weightController,
+            controller: controller,
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(hintText: 'Weight in kg'),
+            decoration: InputDecoration(hintText: hintText),
           ),
-          actions: <Widget>[
+          actions: [
+            // Button to submit the input and update value
             TextButton(
               onPressed: () {
-                setState(() {
-                  int enteredWeight = int.tryParse(_weightController.text) ?? weight;
-                  if (enteredWeight > 200) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Weight exceeds the maximum limit of 200 kg'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  } else {
-                    weight = enteredWeight;
-                  }
-                });
+                int value = int.tryParse(controller.text) ??
+                    (hintText == 'Weight in kg' ? weight : age);
+                if (value > 200) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text('$title exceeds the maximum limit of 200'),
+                    backgroundColor: Colors.redAccent,
+                  ));
+                } else {
+                  updateValue(value); // Update the value based on user input
+                }
                 Navigator.of(context).pop();
               },
               child: const Text('OK'),
@@ -94,80 +94,75 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  // Function to show the age input dialog
-  void showAgeInputDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Enter your age'),
-          content: TextField(
-            controller: _ageController,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(hintText: 'Age'),
+  // Function to build the container for weight and age selection with increment/decrement buttons
+  Widget buildContainer(String title, int value, String unit,
+      void Function() increment, void Function() decrement) {
+    return ContainerBox(
+      boxColor: inActiveColor,
+      childwidget: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Text(title, style: textStyle1),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(value.toString(), style: textStyle2),
+              Text(unit, style: textStyle1),
+            ],
           ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  int enteredAge = int.tryParse(_ageController.text) ?? age;
-                  if (enteredAge > 200) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Age exceeds the maximum limit of 200 years'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  } else {
-                    age = enteredAge;
-                  }
-                });
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              // Increment button
+              FloatingActionButton(
+                  onPressed: increment,
+                  backgroundColor: activeColor,
+                  child:
+                      const Icon(FontAwesomeIcons.plus, color: Colors.white)),
+              SizedBox(width: 20),
+              // Decrement button
+              FloatingActionButton(
+                  onPressed: decrement,
+                  backgroundColor: activeColor,
+                  child:
+                      const Icon(FontAwesomeIcons.minus, color: Colors.white)),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("BMI Calculator")), // App bar title
+      appBar: AppBar(title: const Text("BMI Calculator")), // AppBar with title
       body: SingleChildScrollView(
-        // Allow scrolling if the content is too large
         child: Column(
           children: <Widget>[
-            // Gender selection row
+            // Row to display male and female selection boxes
             Row(
               children: <Widget>[
+                // Male gender box
                 Expanded(
-                  child: GestureDetector(
-                    onTap: () => setState(() => updateBoxColor(1)),
-                    // Update color for male
-                    child: ContainerBox(
-                      boxColor: maleBoxColor,
-                      childwidget: const DataContainer(
-                          icon: FontAwesomeIcons.male, title: 'MALE'),
-                    ),
-                  ),
-                ),
+                    child: GestureDetector(
+                        onTap: () => updateBoxColor(1),
+                        child: ContainerBox(
+                            boxColor: maleBoxColor,
+                            childwidget: const DataContainer(
+                                icon: FontAwesomeIcons.male, title: 'MALE')))),
+                // Female gender box
                 Expanded(
-                  child: GestureDetector(
-                    onTap: () => setState(() => updateBoxColor(2)),
-                    // Update color for female
-                    child: ContainerBox(
-                      boxColor: femaleBoxColor,
-                      childwidget: const DataContainer(
-                          icon: FontAwesomeIcons.female, title: 'FEMALE'),
-                    ),
-                  ),
-                ),
+                    child: GestureDetector(
+                        onTap: () => updateBoxColor(2),
+                        child: ContainerBox(
+                            boxColor: femaleBoxColor,
+                            childwidget: const DataContainer(
+                                icon: FontAwesomeIcons.female,
+                                title: 'FEMALE')))),
               ],
             ),
-            // Height selection container
+            // Container for height input with a slider
             ContainerBox(
               boxColor: inActiveColor,
               childwidget: Column(
@@ -187,45 +182,82 @@ class _MainScreenState extends State<MainScreen> {
                     max: 220,
                     activeColor: activeColor,
                     inactiveColor: inActiveColor,
-                    onChanged: (newValue) => setState(
-                            () => height = newValue.round()), // Update height
+                    onChanged: (newValue) =>
+                        setState(() => height = newValue.round()),
                   ),
                 ],
               ),
             ),
-            // Row for weight and age selection
+            // Row to display weight and age containers with input options
             Row(
               children: <Widget>[
                 Expanded(
-                  child: GestureDetector(
-                    onTap: showWeightInputDialog,
-                    // Open weight input dialog
-                    child: ContainerBox(
-                      boxColor: inActiveColor,
-                      childwidget:
-                      buildWeightContainer(), // Weight selection widget
-                    ),
-                  ),
-                ),
+                    child: GestureDetector(
+                        onTap: () => showInputDialog(
+                            'Enter your weight',
+                            'Weight in kg',
+                            _weightController,
+                            (val) => weight = val),
+                        child: buildContainer(
+                            'WEIGHT',
+                            weight,
+                            'kg',
+                            () => setState(() => weight++),
+                            () => setState(() => weight--)))),
                 Expanded(
-                  child: GestureDetector(
-                    onTap: showAgeInputDialog,
-                    // Open age input dialog
-                    child: ContainerBox(
-                      boxColor: inActiveColor,
-                      childwidget: buildAgeContainer(), // Age selection widget
-                    ),
+                    child: GestureDetector(
+                        onTap: () => showInputDialog('Enter your age', 'Age',
+                            _ageController, (val) => age = val),
+                        child: buildContainer(
+                            'AGE',
+                            age,
+                            'years',
+                            () => setState(() => age++),
+                            () => setState(() => age--)))),
+              ],
+            ),
+            // Footer with developer info and social media links
+            Column(
+              children: <Widget>[
+                ContainerBox(
+                  boxColor: inActiveColor,
+                  childwidget: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      const Text('Developed with ❤ by Hamza Khalid',
+                          style: textStyle1),
+                      const SizedBox(height: 10.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // GitHub link button
+                          FloatingActionButton(
+                              onPressed: () => launch(
+                                  'https://github.com/hamza091197?tab=repositories'),
+                              backgroundColor: inActiveColor,
+                              child: const Icon(FontAwesomeIcons.github,
+                                  color: Colors.white)),
+                          SizedBox(width: 1),
+                          // LinkedIn link button
+                          FloatingActionButton(
+                              onPressed: () => launch(
+                                  'https://www.linkedin.com/in/hamza-khalid-357b4327b/'),
+                              backgroundColor: inActiveColor,
+                              child: const Icon(FontAwesomeIcons.linkedin,
+                                  color: Colors.white)),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-            // Developed by section
-            buildDevelopedBySection(),
-            // Calculate button
+            // Calculate BMI button
             GestureDetector(
               onTap: () {
                 setState(() {
-                  result = calculateBmi(weight, height); // Calculate BMI on tap
+                  result = calculateBmi(weight, height); // Calculate BMI
+                  // Show BMI result in dialog
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
@@ -242,7 +274,6 @@ class _MainScreenState extends State<MainScreen> {
                             children: <Widget>[
                               const Text('Your BMI', style: textStyle1),
                               Text(result.toString(), style: textStyle2),
-                              // Display BMI result
                             ],
                           ),
                         ),
@@ -252,128 +283,20 @@ class _MainScreenState extends State<MainScreen> {
                 });
               },
               child: Container(
-                width: double.infinity,
-                height: 60.0,
-                color: activeColor,
-                margin: const EdgeInsets.only(top: 10.0),
-                child:
-                const Center(child: Text('Calculate', style: textStyle3)),
-              ),
+                  width: double.infinity,
+                  height: 60.0,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30.0),
+                    color: activeColor,
+                  ),
+                  child: const Center(
+                      child: Text('Calculate BMI',
+                          style:
+                              TextStyle(color: Colors.white, fontSize: 20.0)))),
             ),
           ],
         ),
       ),
     );
-  }
-
-  // Widget for weight selection
-  Column buildWeightContainer() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        const Text('WEIGHT', style: textStyle1),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(weight.toString(), style: textStyle2),
-            const Text('kg', style: textStyle1),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            FloatingActionButton(
-              onPressed: () => setState(() => weight++), // Increment weight
-              backgroundColor: activeColor,
-              child: const Icon(FontAwesomeIcons.plus, color: Colors.white),
-            ),
-            const SizedBox(width: 20), // Add space between plus and minus icons
-            FloatingActionButton(
-              onPressed: () => setState(() => weight--), // Decrement weight
-              backgroundColor: activeColor,
-              child: const Icon(FontAwesomeIcons.minus, color: Colors.white),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  // Widget for age selection
-  Column buildAgeContainer() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        const Text('AGE', style: textStyle1),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(age.toString(), style: textStyle2),
-            const Text('years', style: textStyle1),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            FloatingActionButton(
-              onPressed: () => setState(() => age++), // Increment age
-              backgroundColor: activeColor,
-              child: const Icon(FontAwesomeIcons.plus, color: Colors.white),
-            ),
-            const SizedBox(width: 20), // Add space between plus and minus icons
-            FloatingActionButton(
-              onPressed: () => setState(() => age--), // Decrement age
-              backgroundColor: activeColor,
-              child: const Icon(FontAwesomeIcons.minus, color: Colors.white),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  // Section displaying developer information
-  Column buildDevelopedBySection() {
-    return Column(
-      children: <Widget>[
-        ContainerBox(
-          boxColor: inActiveColor,
-          childwidget: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Text('Developed with ❤ by Hamza Khalid', style: textStyle1),
-              const SizedBox(height: 10.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: buildSocialMediaIcons(), // Build social media icons
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  // Widget for social media icons
-  List<Widget> buildSocialMediaIcons() {
-    return [
-      FloatingActionButton(
-        elevation: 0,
-        onPressed: () =>
-            launch('https://github.com/hamza091197?tab=repositories'),
-        // Launch GitHub
-        backgroundColor: inActiveColor,
-        child: const Icon(FontAwesomeIcons.github, color: Colors.white),
-      ),
-      const SizedBox(width: 1),
-      FloatingActionButton(
-        elevation: 0,
-        onPressed: () =>
-            launch('https://www.linkedin.com/in/hamza-khalid-357b4327b/'),
-        // Launch LinkedIn
-        backgroundColor: inActiveColor,
-        child: const Icon(FontAwesomeIcons.linkedin, color: Colors.white),
-      ),
-    ];
   }
 }
