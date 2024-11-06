@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor:
             Colors.black, // Sets the background color of the scaffold to black
       ),
-      home: const MainScreen(), // Specifies the home widget of the app
+      home: MainScreen(), // Specifies the home widget of the app
     );
   }
 }

@@ -10,9 +10,9 @@ const activeColor = Color(0xff0073dd);
 const inActiveColor = Color(0xFF212121);
 const textStyle1 = TextStyle(fontSize: 18.0, color: Colors.white);
 const textStyle2 =
-    TextStyle(fontSize: 50.0, fontWeight: FontWeight.w900, color: Colors.white);
+TextStyle(fontSize: 50.0, fontWeight: FontWeight.w900, color: Colors.white);
 const textStyle3 =
-    TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold, color: Colors.white);
+TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold, color: Colors.white);
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -30,21 +30,23 @@ class _MainScreenState extends State<MainScreen> {
   int weight = 80; // Default weight in kg
   int age = 27; // Default age
   String result = ""; // Result variable for BMI calculation
+  final _weightController = TextEditingController();
+  final _ageController = TextEditingController();
 
   // Function to update the color of gender selection boxes
   void updateBoxColor(int gender) {
     if (gender == 1) {
       // If male is selected
       maleBoxColor =
-          (maleBoxColor == inActiveColor) ? activeColor : inActiveColor;
+      (maleBoxColor == inActiveColor) ? activeColor : inActiveColor;
       femaleBoxColor =
-          (maleBoxColor == inActiveColor) ? inActiveColor : activeColor;
+      (maleBoxColor == inActiveColor) ? inActiveColor : activeColor;
     } else {
       // If female is selected
       femaleBoxColor =
-          (femaleBoxColor == inActiveColor) ? activeColor : inActiveColor;
+      (femaleBoxColor == inActiveColor) ? activeColor : inActiveColor;
       maleBoxColor =
-          (femaleBoxColor == activeColor) ? inActiveColor : activeColor;
+      (femaleBoxColor == activeColor) ? inActiveColor : activeColor;
     }
   }
 
@@ -52,6 +54,82 @@ class _MainScreenState extends State<MainScreen> {
   String calculateBmi(int weight, int height) {
     double bmi = weight / pow(height / 100, 2); // BMI formula
     return bmi.toStringAsFixed(1); // Return BMI rounded to one decimal place
+  }
+
+  // Function to show the weight input dialog
+  void showWeightInputDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Enter your weight'),
+          content: TextField(
+            controller: _weightController,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(hintText: 'Weight in kg'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  int enteredWeight = int.tryParse(_weightController.text) ?? weight;
+                  if (enteredWeight > 200) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Weight exceeds the maximum limit of 200 kg'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  } else {
+                    weight = enteredWeight;
+                  }
+                });
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Function to show the age input dialog
+  void showAgeInputDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Enter your age'),
+          content: TextField(
+            controller: _ageController,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(hintText: 'Age'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  int enteredAge = int.tryParse(_ageController.text) ?? age;
+                  if (enteredAge > 200) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Age exceeds the maximum limit of 200 years'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  } else {
+                    age = enteredAge;
+                  }
+                });
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -110,7 +188,7 @@ class _MainScreenState extends State<MainScreen> {
                     activeColor: activeColor,
                     inactiveColor: inActiveColor,
                     onChanged: (newValue) => setState(
-                        () => height = newValue.round()), // Update height
+                            () => height = newValue.round()), // Update height
                   ),
                 ],
               ),
@@ -119,16 +197,24 @@ class _MainScreenState extends State<MainScreen> {
             Row(
               children: <Widget>[
                 Expanded(
-                  child: ContainerBox(
-                    boxColor: inActiveColor,
-                    childwidget:
-                        buildWeightContainer(), // Weight selection widget
+                  child: GestureDetector(
+                    onTap: showWeightInputDialog,
+                    // Open weight input dialog
+                    child: ContainerBox(
+                      boxColor: inActiveColor,
+                      childwidget:
+                      buildWeightContainer(), // Weight selection widget
+                    ),
                   ),
                 ),
                 Expanded(
-                  child: ContainerBox(
-                    boxColor: inActiveColor,
-                    childwidget: buildAgeContainer(), // Age selection widget
+                  child: GestureDetector(
+                    onTap: showAgeInputDialog,
+                    // Open age input dialog
+                    child: ContainerBox(
+                      boxColor: inActiveColor,
+                      childwidget: buildAgeContainer(), // Age selection widget
+                    ),
                   ),
                 ),
               ],
@@ -171,7 +257,7 @@ class _MainScreenState extends State<MainScreen> {
                 color: activeColor,
                 margin: const EdgeInsets.only(top: 10.0),
                 child:
-                    const Center(child: Text('Calculate', style: textStyle3)),
+                const Center(child: Text('Calculate', style: textStyle3)),
               ),
             ),
           ],
@@ -201,10 +287,9 @@ class _MainScreenState extends State<MainScreen> {
               backgroundColor: activeColor,
               child: const Icon(FontAwesomeIcons.plus, color: Colors.white),
             ),
-            const SizedBox(width: 10.0),
+            const SizedBox(width: 20), // Add space between plus and minus icons
             FloatingActionButton(
-              onPressed: () => setState(() => weight > 0 ? weight-- : weight),
-              // Decrement weight
+              onPressed: () => setState(() => weight--), // Decrement weight
               backgroundColor: activeColor,
               child: const Icon(FontAwesomeIcons.minus, color: Colors.white),
             ),
@@ -220,20 +305,24 @@ class _MainScreenState extends State<MainScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         const Text('AGE', style: textStyle1),
-        Text(age.toString(), style: textStyle2),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(age.toString(), style: textStyle2),
+            const Text('years', style: textStyle1),
+          ],
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             FloatingActionButton(
-              onPressed: () => setState(() => age < 100 ? age++ : age),
-              // Increment age
+              onPressed: () => setState(() => age++), // Increment age
               backgroundColor: activeColor,
               child: const Icon(FontAwesomeIcons.plus, color: Colors.white),
             ),
-            const SizedBox(width: 10.0),
+            const SizedBox(width: 20), // Add space between plus and minus icons
             FloatingActionButton(
-              onPressed: () => setState(() => age > 0 ? age-- : age),
-              // Decrement age
+              onPressed: () => setState(() => age--), // Decrement age
               backgroundColor: activeColor,
               child: const Icon(FontAwesomeIcons.minus, color: Colors.white),
             ),
@@ -276,7 +365,7 @@ class _MainScreenState extends State<MainScreen> {
         backgroundColor: inActiveColor,
         child: const Icon(FontAwesomeIcons.github, color: Colors.white),
       ),
-      const SizedBox(width: 10.0),
+      const SizedBox(width: 1),
       FloatingActionButton(
         elevation: 0,
         onPressed: () =>
